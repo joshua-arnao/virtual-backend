@@ -20,3 +20,27 @@ for nota in notas[:3]:
 
 for posición in range(3):
     print(notas[posición])
+
+aprobados = ['Eduardo', 'Pedro', 'Maria', 'Fatima']
+
+for aprobado in aprobados:
+    if(aprobado == 'Pedro'):
+        print('El aprobado esta aprobado')
+        break #Generá que el loop se detenga de manera abupta
+else:
+    print('Termino de ejecutarse el for de manera normal') # else se ejecuto despues de haber iterado el loop for
+
+print('Termino de ejecutarse el for')
+
+#----------------------------------------------------------------
+products = ['manzanas', 'peras', 'Tallarines', 'Tazas']
+search = input('Ingrese el producto a buscar: ')
+
+for product in products:
+    if product == search:
+        print('El producto si esta en la tienda')
+        break
+else:
+    print('No se encontro el producto a buscar')
+
+print('igual yo me ejecuto')
