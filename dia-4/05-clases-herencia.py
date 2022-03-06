@@ -1,10 +1,10 @@
  #*HERENCIA => extraer información de un clase padre
 #DRY => Don't repeat yourself
 class Usuario:
-    def __init__(selft, nombre, apellido, correo):
-        selft.nombre = nombre
-        selft.apellido = apellido
-        selft.correo = correo
+    def __init__(self, nombre, apellido, correo):
+        self.nombre = nombre
+        self.apellido = apellido
+        self.correo = correo
 
     def saludar(self):
         return 'hola soy {}'.format(self.nombre)

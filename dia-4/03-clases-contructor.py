@@ -2,9 +2,9 @@ class Animal:
     nombre = ''
     sexo = ''
     patas = 0
-    #metodo constructor: este merodo se llamara cuando vayamos a crear una nueva instancia de la clase
+    #metodo constructor: este metodo se llamara cuando vayamos a crear una nueva instancia de la clase
     def __init__(self, nombre, sexo, nro_patas):
-        #crear unos nuevos atributos dentro de la clase y estos ua no serás estaticos
+        #crear unos nuevos atributos dentro de la clase y estos ya no serás estaticos
         self.nombre = nombre
         self.sexo = sexo
         self.patas = nro_patas
