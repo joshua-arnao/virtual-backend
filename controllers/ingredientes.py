@@ -5,7 +5,8 @@ from dtos.dto_prueba import ValidadorPrueba, ValidarUsuarioPrueba
 from dtos.ingrediente_dto import IngredienteRequestDTO, IngredienteResponseDTO
 from marshmallow.exceptions import ValidationError
 
-# todos los metodos HTTP que vamos a utilizar se definen como metodos de la clase
+# to dos los metodos HTTP que vamos a utilizar se definen como metodos de la clase
+# Crear Ingrediente
 class IngredientesController(Resource):
     def get(self):
         # vamos a crear una sesion en la cual ejecutaremos una query
@@ -92,3 +93,49 @@ class PruebaController(Resource):
             'content': usuario,
             'resultado': resultado
         }
+
+#Modificar Ingrediente
+class IngredienteController(Resource):
+    def get(self, id):
+        # filter_by > tenemos que indicar dentro de ese metodo las columnas que queremos usar para hacer el filtro con su respectivo valor
+        # el parametro sera el nombre del atributo definido en el modelo y el segundo sera el valor
+        # SELECT TOP 1 * FROM ingredientes WHERE id= $id
+        ingrediente = conexion.session.query(Ingrediente).filter_by(id=id).first()
+        print(ingrediente)
+
+        if ingrediente:
+            # mando a llamar a mi DTO de respuesta del ingrediente
+            resultado = IngredienteResponseDTO().dump(ingrediente)
+            return {
+                'result': resultado
+            }
+        else:
+            return {
+                'message': 'El ingrediente a buscar no existe'
+            }, 404
+    
+    def put(self, id):
+        ingrediente= conexion.session.query(Ingrediente).filter_by(id=id).first()
+        try:
+            if ingrediente:
+                body = request.get_json()
+                # validamos la data enviada por el usuario para que cumpla con lo definido en el DTO
+                data_validada = IngredienteRequestDTO().load(body)
+                #Al ya validar nuestro ingrediente y que exista procederemos a modificar sus columnas (solo sería nombre) con el nuevo valor enviado por el usuario previamente ya validado
+                ingrediente.nombre = data_validada.get('nombre')
+                # solamente hacemos un commit ya que no estamos agregando nuevos valores a la base de datos
+                conexion.session.commit()
+                resultado = IngredienteResponseDTO().dump(ingrediente)
+                return {
+                    'message': 'Ingrediente actualiado exitosamente',
+                    'content': resultado
+                }
+            else:
+                return {
+                    'message': 'Ingrediente a actualzar no existe'
+                }, 404
+        except Exception as e:
+            return {
+                'message': 'Error al actualizar el ingrediente',
+                'content': e.args
+            }, 400
