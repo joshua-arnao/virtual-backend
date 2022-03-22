@@ -47,13 +47,22 @@ class RecetasController(Resource):
         paginacion = PaginacionRequestDTO().load(query_params)
         perPage = paginacion.get('perPage')
         page = paginacion.get('page')
-        skip = perPage * (page - 1)
 
+        if(perPage < 1 or page < 1):
+            return {
+                'message': 'Los parametros no pueden recibir valores negativos'
+            }, 400
+            
+        skip = perPage * (page - 1)
+        #Page = 2 / perPage = 5
         recetas = conexion.session.query(Receta).limit(perPage).offset(skip).all()
         #SELECT COUNT(*) FROM recetas; => me da el total de registros que tenga en esa tabla
         total = conexion.session.query(Receta).count()
+        #Indica cuantos elementos por págna vamos a tener, en el caso que se pida mas de lo que se solicita
         itemsPerPage = perPage if total >= perPage else total
         totalPages = ceil(total / itemsPerPage) if itemsPerPage > 0 else None
+        prevPage = page - 1 if page > 1 and page <= totalPages else None
+        nextPage = page + 1 if totalPages > 1 and page < totalPages else None
 
         respuesta = RecetaResponseDTO(many=True).dump(recetas)
         
@@ -62,7 +71,9 @@ class RecetasController(Resource):
             'paginacion': {
                 'total': total,
                 'itemPerpage': itemsPerPage,
-                'totalPages': totalPages
+                'totalPages': totalPages,
+                'prevPage': prevPage,
+                'nextPage': nextPage
             },
             'content': respuesta
 
