@@ -1,7 +1,10 @@
 from unittest import skip
 from flask_restful import Resource, request
 from models.recetas import Receta
-from dtos.receta_dto import RecetaRequestDTO, RecetaResponseDTO, BuscarRecetaRequestDTO
+from dtos.receta_dto import (   RecetaRequestDTO, 
+                                RecetaResponseDTO, 
+                                BuscarRecetaRequestDTO,
+                                RecetaPreparacionesResponseDTO)
 from dtos.paginacion_dto import PaginacionRequestDTO
 from config import conexion
 from math import ceil
@@ -109,3 +112,22 @@ class BuscarRecetaController(Resource):
                 'message': 'Error al hacer la busqueda',
                 'content': e.args
             }, 400
+
+class RecetaController(Resource):
+    def get(self, id):
+        #buscar la receta según su id
+        # https://docs.sqlalchemy.org/en/14/orm/query.html?highlight=filter_by#sqlalchemy.orm.Query.filter
+        receta: Receta | None = conexion.session.query(Receta).filter(Receta.id == id).first()
+        #Si no hay la receta devolver un mensaje: 'Receta no encontrada con un estado NOT FOUND
+        if receta is None:
+            return {
+                'message': 'Receta no encontrada'
+            }, 404
+        #Si encuentra la receta devolver message: 'Receta encontrada' con un estado OK
+        else:
+            print(receta.preparaciones)
+            respuesta = RecetaPreparacionesResponseDTO().dump(receta)
+            return {
+                'message': 'Receta encontrada',
+                'content': respuesta
+            }, 200
