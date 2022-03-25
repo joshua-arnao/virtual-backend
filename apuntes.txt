@@ -1,8 +1,0 @@
-python3 -m venv <nombre_entorno> => crear entorno prueba  
-source <nombre_entorno>/bin/activate => activar el entono de prueba
-pip install <libreria> => instalar una nueva libreria
-pip list => tabla de lista de librerias
-pip freeze => Declar package json en py
-pip freeze > requiremente.txt => crera un archivo donde alamcena las librerias instaladas
-pip intall -r <archivo.extension> => leer un archivo y lo instalara
-brew install mysql
