@@ -1,3 +1,4 @@
+# Tabla Foranea => La tabla no depende de otra tabla
 from config import conexion
 from sqlalchemy import Column, types
 
