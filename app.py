@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_restful import Api
-from controllers.usuarios import RegistroController
+from controllers.usuarios import RegistroController, LoginController
 from config import conexion, validador
 from os import environ
 from dotenv import load_dotenv
@@ -15,6 +15,7 @@ api = Api(app=app)
 validador.init_app(app)
 conexion.init_app(app)
 
+#conexion.drop_all(app=app) # Eliminara todos los registros de una tabla
 conexion.create_all(app=app)
 
 @app.route('/')
@@ -45,6 +46,7 @@ def inicio():
         }])
 
 api.add_resource(RegistroController, '/registro')
+api.add_resource(LoginController, '/login')
 
 if(__name__ == '__main__'):
     app.run(debug=True)
