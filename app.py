@@ -29,7 +29,6 @@ app.config['JWT_AUTH_PASSWORD_KEY'] = 'pass'
 app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=1, minutes=5)
 # Para indicar cual sera el prefijo de la token en los headers de authorization
 app.config['JWT_AUTH_HEADER_PREFIX'] = 'Bearear'
-
 jsonwebtoken = JWT(app=app, authentication_handler=autenticador,
                     identity_handler=identificador)
 
