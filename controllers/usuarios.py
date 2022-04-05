@@ -59,9 +59,11 @@ class ResetPasswordController(Resource):
         # ------------------------- UTILIZANDO LA LIBRERIA DE MENSAJERIA DE PYTHON -------------------------
         mensaje = MIMEMultipart()
         email_emisor = environ.get('EMAIL_EMISOR')
+        print(email_emisor)
         email_password = environ.get('EMAIL_PASSWORD')
         try:
             data = ResetPasswordRequestDTO().load(body)
+            # validar si existe ese usuario en mi bd
             usuarioEncontrado = conexion.session.query(
                 Usuario).filter_by(correo=data.get('correo')).first()
             if usuarioEncontrado is not None:
@@ -79,9 +81,7 @@ class ResetPasswordController(Resource):
 
                 #Siempre que queremos agregar un HTML como textp del mensaje tiene que ir despues del texto ya que primero tratará de envriar el último y si no enviará en anteriors
                 
-                mensaje['Subject'] = 'Reinciar contraseña Monedero APP'
-
-                # ENCRIPTACIÓN DE INFORMACIÓN
+                # ----------- ENCRIPTACIÓN DE INFORMACIÓN -----------
                 # Fernet.generate_key() => para generar la llaveve que se guardara en el env
                 fernet = Fernet(environ.get('FERNET_SECRET_KEY'))
 
@@ -94,13 +94,16 @@ class ResetPasswordController(Resource):
                 mensaje_encriptado = fernet.encrypt(
                     bytes(mensaje_secreto_str,'utf-8'))
 
-                # FIN DE ENCRIPTACION
-                
+                # ----------- FIN DE ENCRIPTACION -----------
+
+                # si queremos un generador de correos con diseño : https://beefree.io/
                 html = open('./email_templates/prueba.html').read().format(
                     usuarioEncontrado.nombre, environ.get('URL_FRONT')+'/reset-password?token='+mensaje_encriptado.decode('utf-8'))
 
+                # siempre que queremos agregar un HTML como texto del mensaje tiene que ir despues del texto ya que primero tratara de enviar el ultimo y si no puede enviara el anterior
                 #mensaje.attach(MIMEText(texto, 'plain'))
                 mensaje.attach(MIMEText(html, 'html'))
+
                 # incio del envio del correo 
                 #                       ||SERVIDOR | PUERTO
                 # outlook => outlook.office365.com | 587
@@ -127,6 +130,7 @@ class ResetPasswordController(Resource):
                 'message': 'Correo enviado exitosamente'
             }
         except Exception as e:
+            print(e.args)
             return {
                 'message': 'Error al enviar correo',
                 'content': e.args
