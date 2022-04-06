@@ -1,3 +1,4 @@
+from tkinter.messagebox import CANCEL
 from turtle import update
 from django.db import models
 
@@ -23,5 +24,41 @@ class Etiqueta(models.Model):
         ordering = ['-nombre']
 
 class Tareas(models.Model):
-    pass
+
+    class CategoriasOpciones(models.TextChoices):
+        TODO = 'TODO', 'TO_DO'
+        IN_PROGRESS= 'IP', 'IN_PROGESS'
+        DONE= 'DONE', 'DONE'
+        CANCELLED = 'CANCELLED', 'CANCELLED'
+
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=45, null=False)
+    categoria = models.CharField(max_length=45, choices=CategoriasOpciones.choices, default=CategoriasOpciones.TODO)
+
+    # Forma 2 usando una lista de tuplas
+    # categoria = models.CharField(max_length=45, choices=[
+    # ('TODO, 'TO_DO').
+    # ('IP', 'IN_PROGESS')
+    # ('DONE', 'DONE')
+    # (CANCELLED, 'CANCELLED')
+    # ], default='TODO)
+
+    fechaCaducidad = models.DateTimeField(db_column='fecha_caducidad')
+    importancia = models.IntegerField(null=False)
+    descripcion = models.TextField()
+
+    createdAt = models.DateTimeField(auto_now_add=True, db_column='created_et')
+    updateAt = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    # En Django se puede utilizar las relaciones one-to-one, one-to-many o many-to-many para crear las relaciones entre las tablas, aca ya no es necesario usar las relationships porque ya están integradas dentro de la relación
+    etiquetas = models.ManyToManyField(to=Etiqueta, related_name='tareas')
+    class Meta:
+        db_table = 'tareas'
+
+# si la tabla tareas_etiqueta no fuese una tabla pivote, detalle entonces tendria que crear la tabla como si fuese una tabla común y corrientes
+# class TareasEtiquetas(models.Model):
+#     etiquetaFK = models.ForeignKey(to=Etiqueta)
+#     tareaFK = models.ForeignKey(to=Tareas)
+#     #las demas columnas
+
 

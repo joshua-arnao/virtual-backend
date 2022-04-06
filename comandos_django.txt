@@ -11,3 +11,9 @@ python3 manage.py showmigrations => muestra todas las migraciones que tenemos en
 python3 manage.py migrate sessions
 
 python3 manage.py migrate => ejecutara la migración pendiente en la bd, adicional se puede colocar el nombrer de la aplicación para que solo se ejecute dicha migración
+
+python3 manage.py makemigrations NOMBRE_APP --name NOMBRE_MIGRACION => creara una nueva migracion de nuestra aplicacion con todos los cambios que se habran hecho en el ORM
+
+python3 manage.py sqlmigrate NOMBRE_MIGRACION
+
+python3 manage.py migrate => crea la tabla

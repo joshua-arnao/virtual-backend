@@ -13,3 +13,7 @@ pip freeze > requirements.txt  >  creara un archivo llamado "requirements.txt" e
 pip install -r requirements.txt > instalara las librerias definidas en el archivo "requirements.txt" con su version en especifico
 
 python3 -m pip install --upgrade pip => Actualiza el pip
+
+https://docs.djangoproject.com/en/3.2/topics/migrations/#reversing-migrations
+NOTA:
+python manage.py migrate NOMBRE_APP NUMERO_MIGRACION > efectuar dicha migracion o se puede revertir hasta la migracion seleccionada (todas las migraciones efectuadas queden sin efecto) si queremos revetir absolutamente todas las migraciones podemos colocar en NUMERO_MIGRACION zero 
