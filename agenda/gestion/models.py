@@ -26,8 +26,9 @@ class Etiqueta(models.Model):
 class Tareas(models.Model):
 
     class CategoriasOpciones(models.TextChoices):
+        # Cada opción le podemos pasar 2 parametros en la cual el primero será si abreviatura para que se guarde en la bd y el segundo el nombre completo que se mostraá cuado querramos utilziar los valores en un formulario usando Templates (Jinja) o dentro del formulario del DRF
         TODO = 'TODO', 'TO_DO'
-        IN_PROGRESS= 'IP', 'IN_PROGESS'
+        IN_PROGRESS= 'IP', 'IN_PROGRESS'
         DONE= 'DONE', 'DONE'
         CANCELLED = 'CANCELLED', 'CANCELLED'
 
@@ -45,7 +46,7 @@ class Tareas(models.Model):
 
     fechaCaducidad = models.DateTimeField(db_column='fecha_caducidad')
     importancia = models.IntegerField(null=False)
-    descripcion = models.TextField()
+    descripcion = models.TextField(null=True)
 
     createdAt = models.DateTimeField(auto_now_add=True, db_column='created_et')
     updateAt = models.DateTimeField(auto_now=True, db_column='updated_at')

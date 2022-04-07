@@ -17,3 +17,7 @@ python3 manage.py makemigrations NOMBRE_APP --name NOMBRE_MIGRACION => creara un
 python3 manage.py sqlmigrate NOMBRE_MIGRACION
 
 python3 manage.py migrate => crea la tabla
+
+
+---- Interactive Console ----
+python3 manage.py shell

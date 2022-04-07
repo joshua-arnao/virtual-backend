@@ -3,26 +3,66 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
+from .serializers import PruebaSerializer, TareaSerializer, EtiquetaSerializer
+from .models import Tareas, Etiqueta
 
 # Create your views here.
 @api_view(http_method_names=['GET', 'POST'])
-def inicio(request: Request):
+def inicio(request: Request ):
     # Request será toda la inforamción enviada por el cliente
     # https://www.django-rest-framework.org/api-guide/requests/
     print(request.method)
     print(request)
     if request.method == 'GET':
-        # Comportamiento cuando sea GET
+        # comportamiento cuando sea GET
         return Response(data={
-            'message': 'Bienevid@ a mi API de agenda'
+            'message': 'Bienvenido a mi API de agenda'
         })
+
     elif request.method == 'POST':
-        # Comportamiento cuando sea POST
+        # comportamiento cuando sea POST
         return Response(data={
             'message': 'Hiciste un post'
         }, status=201)
 
 class PruebaApiView(ListAPIView):
+    # Sirve para ayudarnos a cuando se llame este request nos haga el trabajo de serializar y desealizar la inforamción (es igual que un DTO)
     # serializer => serialiaza la información aun formato definido
-    serializer = None
+    serializer_class = PruebaSerializer
+    # queryset => encargado de hacer la búsqueda para este controlador (para todos sus metodos)
+    queryset = [{
+        'nombre':'Joshua', 
+        'apellido': 'Arnao', 
+        'correo':'joshua@gmail.com',
+        'dni':'74123050', 
+        'estado_civil':'viudo'},
+        {
+        'nombre':'Karla', 
+        'apellido': 'Lozano', 
+        'correo':'joshua@gmail.com',
+        'dni':'74123050', 
+        'estado_civil':'viudo'}]
+
+    def get(self, request: Request):
+        # Dentro de las vistas genericas se puede sobrescribir la lógica incial del controlador
+        # Si modifico la lógica original de cualquier generico en base a su metodo a utilizar ya no será necesario definir los atributos serializer_class y queryset ya que estos no se usan para cuando se modifica la lógica original
+        informacion = self.queryset
+        # Uso el serializador para filtrar la información necesaria y no mostrar información demas pero en este caso como le voy a pasar uno o mas registros de usuario entonces para el serializador los pueda iterar le coloco el parametro many=True que lo que hará será iterar
+        informacion_serializada = self.serializer_class(data=informacion, many=True)
+        # Para utilizar la informacion serializada OBLIGATORIAMENTE tengo que llamar al metodo is_valid() el cual internamente hara la validacion de los campos y sus configuraciones
+        # raise_exception=True => Este parametro hara la emision del error si que hay indicado cual es el error
+        informacion_serializada.is_valid(raise_exception=True)
+        return Response(data={
+            'menssage':'Hola', 'content':informacion_serializada.data
+            })
+
+
+class TareasApiView(ListCreateAPIView):
+    queryset = Tareas.objects.all() # SELECT * FROM Tareas;
+    serializer_class = TareaSerializer
+
+class EtiquetasApiView(ListCreateAPIView):
+    queryset = Etiqueta.objects.all()
+    serializer_class = EtiquetaSerializer
+
