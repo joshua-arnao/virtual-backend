@@ -4,8 +4,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.generics import ListAPIView, ListCreateAPIView
-from .serializers import PruebaSerializer, TareaSerializer, EtiquetaSerializer
+from .serializers import PruebaSerializer, TareasSerializer, EtiquetaSerializer, TareaSerializer
 from .models import Tareas, Etiqueta
+from rest_framework import status
+# Son un conjunto de librerias que django nos proveee para poder utilizar de una manera más rapida ciertas configuraciones
+from django.utils import timezone
 
 # Create your views here.
 @api_view(http_method_names=['GET', 'POST'])
@@ -60,7 +63,37 @@ class PruebaApiView(ListAPIView):
 
 class TareasApiView(ListCreateAPIView):
     queryset = Tareas.objects.all() # SELECT * FROM Tareas;
-    serializer_class = TareaSerializer
+    serializer_class = TareasSerializer
+
+    # https://www.django-rest-framework.org/api-guide/status-codes/#status-codes
+    def post(self, request: Request):
+        # Serializo la data para validar sus valores y su configuración
+        serializador = self.serializer_class(data=request.data)
+        if serializador.is_valid():
+            # serializador.initial_data => Data inicial sin la validación
+            # Serializador.validated_data => Data ya validada (Solo se puede llamar luego de llamar al metodo is_valid())
+            fechaCaducidad = serializador.validated_data.get('fechaCaducidad')
+            print(type(serializador.validated_data.get('fechaCaducidad')))
+            importancia = serializador.validated_data.get('importancia')
+            
+            if importancia < 0 or importancia > 10:
+                return Response(data={
+                    'message': 'La importancia debe de ser entre 0 y 10'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if timezone.now() > fechaCaducidad:
+                return Response(data={
+                    'message': 'La fecha no puede ser menor que la fecha actual'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data='', status=status.HTTP_201_CREATED) # Created
+        else:
+            # Mostrará todos los errores que hicieron que el is_valid() no cumpla la conidción
+            # serializador.errors 
+            return Response(data={
+                'message': 'La data no es valida',
+                'content': serializador.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class EtiquetasApiView(ListCreateAPIView):
     queryset = Etiqueta.objects.all()
