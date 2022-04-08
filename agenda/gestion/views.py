@@ -3,13 +3,18 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView, ListCreateAPIView
-from .serializers import PruebaSerializer, TareasSerializer, EtiquetaSerializer, TareaSerializer
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from .serializers import ( PruebaSerializer, 
+                           TareasSerializer,
+                           EtiquetaSerializer,
+                           TareaSerializer,
+                           TareaPersonalizableSerializer)
 from .models import Tareas, Etiqueta
 from rest_framework import status
 # Son un conjunto de librerias que django nos proveee para poder utilizar de una manera más rapida ciertas configuraciones
 from django.utils import timezone
 
+# GET => DEVOLVER, POST => CREAR, PUT => ACTUALIZAR, DELETE => ELIMINAR, PATCH => ACTUALIZACIÓN PARCIAL
 # Create your views here.
 @api_view(http_method_names=['GET', 'POST'])
 def inicio(request: Request ):
@@ -75,7 +80,7 @@ class TareasApiView(ListCreateAPIView):
             fechaCaducidad = serializador.validated_data.get('fechaCaducidad')
             print(type(serializador.validated_data.get('fechaCaducidad')))
             importancia = serializador.validated_data.get('importancia')
-            
+
             if importancia < 0 or importancia > 10:
                 return Response(data={
                     'message': 'La importancia debe de ser entre 0 y 10'
@@ -85,7 +90,10 @@ class TareasApiView(ListCreateAPIView):
                 return Response(data={
                     'message': 'La fecha no puede ser menor que la fecha actual'
                 }, status=status.HTTP_400_BAD_REQUEST)
-            return Response(data='', status=status.HTTP_201_CREATED) # Created
+            # El metodo save() se podra llamar siempre que el serializado sea un ModelSerializer y este servira para poder guardar la información actual del serializado en la bd
+            serializador.save()
+
+            return Response(data=serializador.data, status=status.HTTP_201_CREATED) # Created
         else:
             # Mostrará todos los errores que hicieron que el is_valid() no cumpla la conidción
             # serializador.errors 
@@ -98,4 +106,12 @@ class TareasApiView(ListCreateAPIView):
 class EtiquetasApiView(ListCreateAPIView):
     queryset = Etiqueta.objects.all()
     serializer_class = EtiquetaSerializer
+
+
+class TareaApiView(RetrieveUpdateDestroyAPIView):
+    serializer_class = TareaSerializer
+    queryset = Tareas.objects.all()
+
+
+
 

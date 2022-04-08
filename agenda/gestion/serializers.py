@@ -34,6 +34,7 @@ class TareaSerializer(serializers.ModelSerializer):
         model = Tareas
         fields = '__all__'
         depth = 1
+
 class EtiquetaSerializer(serializers.ModelSerializer):
     # Inidicare que este atributo solamente funcionara para cuado vamos a serializar la data antes de devolverla mas mp ára ciamdp querramos usarla para escritura
     # Se tiene que llamar igual que el rellated_name para poder ingresara a esa relación o podremos definir el parametro source en el cual colocaremos el nombre del related_name
@@ -55,3 +56,15 @@ class EtiquetaSerializer(serializers.ModelSerializer):
         }
         # Los campos del modelo que solamente quiero que sean lectura los podre definir en una lista
         read_only_fields = ['createdAt']
+
+
+class TareaPersonalizableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tareas
+        fields = '__all__'
+        # Exclude = ['nombre] # funciona tanto para lectura como escritura
+        extra_kwargs = {
+            'nombre': {
+                'read_only': True
+            }
+        }
