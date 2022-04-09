@@ -3,16 +3,20 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from .serializers import ( PruebaSerializer, 
                            TareasSerializer,
                            EtiquetaSerializer,
                            TareaSerializer,
-                           TareaPersonalizableSerializer)
+                           TareaPersonalizableSerializer,
+                           ArchivoSerializer)
 from .models import Tareas, Etiqueta
 from rest_framework import status
 # Son un conjunto de librerias que django nos proveee para poder utilizar de una manera más rapida ciertas configuraciones
 from django.utils import timezone
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 # GET => DEVOLVER, POST => CREAR, PUT => ACTUALIZAR, DELETE => ELIMINAR, PATCH => ACTUALIZACIÓN PARCIAL
 # Create your views here.
@@ -112,6 +116,32 @@ class TareaApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = TareaSerializer
     queryset = Tareas.objects.all()
 
+class ArchivosAPIView(CreateAPIView):
+    serializer_class = ArchivoSerializer
+
+    def post(self, request:Request):
+        print(request.FILES)
+        data = self.serializer_class(data=request.FILES)
+        if data.is_valid():
+            print(data.validated_data.get('archivo',))
+            # https://docs.djangoproject.com/es/4.0/_modules/django/core/files/uploadedfile/
+            archivo: InMemoryUploadedFile = data.validated_data.get('archivo')
+            print(archivo.name)
+            # https://docs.djangoproject.com/en/4.0/topics/files/#storage-objects
+            # El metodo read( sirve par leer el archivo Pero la lectura hará que tambien se elimine de la memoria temporal por ende no se puede llamar dos o mas veces a este método ua que la segunda ya no tendremos archivo que mostrar)
+            resultado = default_storage.save(
+                'imagenes/'+archivo.name, ContentFile(archivo.read()))
+            print(resultado)
+
+            return Response(data={'message':'archivo guardo exitosamente'},
+            status=status.HTTP_201_CREATED)
+        else:
+            return Response(data={
+                'message':'Error al subir la imagen',
+                'content': data.errors
+                },status=status.HTTP_400_BAD_REQUEST)
+        
+       
 
 
 

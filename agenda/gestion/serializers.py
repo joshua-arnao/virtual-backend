@@ -1,3 +1,4 @@
+from calendar import c
 from pyexpat import model
 from rest_framework import serializers
 from .models import Tareas, Etiqueta
@@ -68,3 +69,6 @@ class TareaPersonalizableSerializer(serializers.ModelSerializer):
                 'read_only': True
             }
         }
+
+class ArchivoSerializer(serializers.Serializer):
+    archivo = serializers.ImageField(max_length=100, use_url=True)

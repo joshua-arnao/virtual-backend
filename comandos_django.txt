@@ -18,6 +18,8 @@ python3 manage.py sqlmigrate NOMBRE_MIGRACION
 
 python3 manage.py migrate => crea la tabla
 
+python3 showmigrations <nombre>
 
+python3 manage.py dbshell
 ---- Interactive Console ----
 python3 manage.py shell
