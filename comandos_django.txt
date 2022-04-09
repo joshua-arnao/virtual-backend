@@ -21,5 +21,8 @@ python3 manage.py migrate => crea la tabla
 python3 showmigrations <nombre>
 
 python3 manage.py dbshell
+
+
+python manage.py flush => Elimina toda la información de todas las tablas, reinicia los indices de los autoincementavles y la vuelve a un estado incial
 ---- Interactive Console ----
 python3 manage.py shell

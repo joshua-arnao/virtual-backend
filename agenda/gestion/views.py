@@ -121,19 +121,35 @@ class ArchivosAPIView(CreateAPIView):
 
     def post(self, request:Request):
         print(request.FILES)
+
+        queryParams = request.query_params
+        carpetaDestino = queryParams.get('carpeta')
+
         data = self.serializer_class(data=request.FILES)
         if data.is_valid():
             print(data.validated_data.get('archivo',))
             # https://docs.djangoproject.com/es/4.0/_modules/django/core/files/uploadedfile/
             archivo: InMemoryUploadedFile = data.validated_data.get('archivo')
+            print(archivo.size)
             print(archivo.name)
+
+            if archivo.size > (5 * 1024 * 1024):
+                return Response(data={
+                    'message':'Archivo muy grande, no puede ser mas de 5mb'
+                }, status=status.HTTP_400_BAD_REQUEST)
+                
             # https://docs.djangoproject.com/en/4.0/topics/files/#storage-objects
             # El metodo read( sirve par leer el archivo Pero la lectura hará que tambien se elimine de la memoria temporal por ende no se puede llamar dos o mas veces a este método ua que la segunda ya no tendremos archivo que mostrar)
             resultado = default_storage.save(
-                'imagenes/'+archivo.name, ContentFile(archivo.read()))
+                (carpetaDestino+'/' if carpetaDestino is not None else '') + archivo.name, ContentFile(archivo.read()))
             print(resultado)
 
-            return Response(data={'message':'archivo guardo exitosamente'},
+            return Response(data={
+                'message':'archivo guardo exitosamente',
+                'content':{
+                    'ubicación': resultado
+                }
+            },
             status=status.HTTP_201_CREATED)
         else:
             return Response(data={

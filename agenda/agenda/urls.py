@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 # include => incluye un archivo con varias rutas all archivo de rutas del proyecto
+from django.conf.urls.static import static #el emtodo static sirve para retornar una lista de URLPatternes pero que establecere que archivos retornaran
+from django.conf import settings # se pueden usar todas las variables definidas en el archivo settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('gestion/', include('gestion.urls'))
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

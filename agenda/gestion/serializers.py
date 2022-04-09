@@ -17,6 +17,8 @@ class PruebaSerializer(serializers.Serializer):
 # https://www.django-rest-framework.org/api-guide/serializers/#modelserializer
 # ModelSerializer => se utiliza para poder usar los modelos ya que generará todos los fields 
 class TareasSerializer(serializers.ModelSerializer):
+    # Modifico la configuración del modelo y le puede setear la nueva configuración que respetara el serializador, no se pude hacer cambios de tipode de datos drasticos (por ejemplo: si el modelo es un InterField en el serializador no podre cambiarlo a CharField porque me lanzará un error al moemtno de guardar la data)
+    foto = serializers.CharField(max_length=100)
     class Meta:
         model = Tareas
         fields = '__all__' # Usaremos todas las columnas de mi table
