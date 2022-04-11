@@ -3,13 +3,18 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
-from .serializers import ( PruebaSerializer, 
-                           TareasSerializer,
-                           EtiquetaSerializer,
-                           TareaSerializer,
-                           TareaPersonalizableSerializer,
-                           ArchivoSerializer)
+from rest_framework.generics import(ListAPIView,
+                                    ListCreateAPIView, 
+                                    RetrieveUpdateDestroyAPIView, 
+                                    CreateAPIView, 
+                                    DestroyAPIView)
+from .serializers import(PruebaSerializer, 
+                         TareasSerializer,
+                         EtiquetaSerializer,
+                         TareaSerializer,
+                         TareaPersonalizableSerializer,
+                         ArchivoSerializer,
+                         EliminarArchivoSerializer)
 from .models import Tareas, Etiqueta
 from rest_framework import status
 # Son un conjunto de librerias que django nos proveee para poder utilizar de una manera más rapida ciertas configuraciones
@@ -17,6 +22,8 @@ from django.utils import timezone
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from os import remove
+from django.conf import settings
 
 # GET => DEVOLVER, POST => CREAR, PUT => ACTUALIZAR, DELETE => ELIMINAR, PATCH => ACTUALIZACIÓN PARCIAL
 # Create your views here.
@@ -137,7 +144,7 @@ class ArchivosAPIView(CreateAPIView):
                 return Response(data={
                     'message':'Archivo muy grande, no puede ser mas de 5mb'
                 }, status=status.HTTP_400_BAD_REQUEST)
-                
+
             # https://docs.djangoproject.com/en/4.0/topics/files/#storage-objects
             # El metodo read( sirve par leer el archivo Pero la lectura hará que tambien se elimine de la memoria temporal por ende no se puede llamar dos o mas veces a este método ua que la segunda ya no tendremos archivo que mostrar)
             resultado = default_storage.save(
@@ -156,8 +163,34 @@ class ArchivosAPIView(CreateAPIView):
                 'message':'Error al subir la imagen',
                 'content': data.errors
                 },status=status.HTTP_400_BAD_REQUEST)
-        
-       
 
 
+class EliminarArchivoAPIView(DestroyAPIView):
+    # El generico DestroyAPIView para una pk
+    serializer_class = EliminarArchivoSerializer
 
+    def delete(self, request: Request):
+        data = self.serializer_class(data=request.data)
+        try:
+            if data.is_valid():
+                ubicacion = data.validated_data.get('archivo')
+                remove(settings.MEDIA_ROOT / ubicacion)
+
+                return Response(data={
+                    'message':'Archivo eliminado correctamente'
+                })
+
+            else:
+                return Response(data={
+                    'message': 'Error al eliminar el archivo',
+                    'content': data.errors
+                })
+        # except:
+        #     return Response(data={
+        #         'message': 'Error al eliminar el archivo'
+        #     })
+        except Exception as e:
+            return Response(data={
+                'message': 'Error al eliminar el archivo',
+                'content': e.args
+            }, status=status.HTTP_404_NOT_FOUND)
