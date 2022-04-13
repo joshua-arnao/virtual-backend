@@ -1,7 +1,11 @@
 CLI => Interfaz en línea de comandos (Command Line Interface)
 Todos los comandos de django se realizan mediante el comando 'django-admin'
+No se puede crear aplicaciones con los nombres de las aplicaciones de Django: auth, contenttypes, message, users, admin, sessions, staticfiles
 django-admin startproject NOMBRE_PROYECTO => Creara un nuevo proyecto con los archivos necesarios
 cd <carpeta>
+
+python3 manage.py createsuperuser => para dar accesos al panel administrativo
+ 
 python3 manage.py => para ver todos los subcomandos disponibles
 
 python3 manage.py runserver => Levanta el pprojecto de Django

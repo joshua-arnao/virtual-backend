@@ -1,0 +1,6 @@
+Para ver la lista completa de comandos: https://www.postgresql.org/docs/current/app-psql.html
+psql -u <USER> -d <DATABASE> -p <PORT> => Conectarse a un servidor a un servidor externo
+
+\l => lista todas las bd de mi servidor
+\c <DATABASE_NAME> => Cambiara a la bd
+\q => termina la sesión de PSQL
