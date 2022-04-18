@@ -134,3 +134,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Sirve para definir cuando modifcamos el conetendio del modelo auth_user
+AUTH_USER_MODEL = 'autorizacion.Usuario'
