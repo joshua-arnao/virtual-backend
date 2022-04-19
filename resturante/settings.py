@@ -14,6 +14,12 @@ from datetime import timedelta
 from pathlib import Path
 from os import environ
 from dotenv import load_dotenv
+# Para crear la ocnfiguración entre mi proyecto y cloudaynari
+import cloudinary
+# Estaré indicando que voy a poder subir imagenes
+import cloudinary.uploader
+# Podré usar la API de cloudinary
+import cloudinary.api
 
 load_dotenv()
 
@@ -43,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'cloudinary',
     'autorizacion',
     'fact_electr',
     'menu',
@@ -140,9 +147,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'autorizacion.Usuario'
 
 # Sirve para toda la configuración de nuestro DjangoRestFanewor
-REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES': {
-    'rest_framework_simplejwt.authentication.JWTAuthentication', }}
+REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES': [
+    'rest_framework_simplejwt.authentication.JWTAuthentication', ]}
 
+# sirve para modificar las configuraciones iniciales de simplejwt
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1)
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'ALGOTIYH': 'HS384'
+
 }
+
+# https://cloudinary.com/documentation/django_integration#installation
+cloudinary.config(
+    cloud_name=environ.get('CLOUDINARY_NAME'),
+    api_key=environ.get('CLOUDINARY_API_KEY'),
+    api_secret=environ.get('CLOUDINARY_SECRET')
+)
