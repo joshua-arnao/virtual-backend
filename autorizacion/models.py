@@ -29,7 +29,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'correo'
-
+    # comentario prueba
     REQUIRED_FIELDS = ['nombre', 'rol']
 
     class Meta:
